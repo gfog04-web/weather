@@ -287,19 +287,11 @@
   }
   }
  
-  async function saveKey() {
+  function saveKey() {
     const key = document.getElementById('key-input').value.trim();
     if (!key || !key.startsWith('aio_')) {
       document.getElementById('setup-error').style.display = 'block';
       document.getElementById('setup-error').textContent = 'Key should start with "aio_". Check and try again.';
-      return;
-    }
-    try {
-      const res = await fetch(`https://io.adafruit.com/api/v2/${AIO_USER}/feeds/temperature/data?limit=1`, { headers:{ 'X-AIO-Key': key } });
-      if (!res.ok) throw new Error();
-    } catch(e) {
-      document.getElementById('setup-error').style.display = 'block';
-      document.getElementById('setup-error').textContent = 'Could not connect. Check your key and try again.';
       return;
     }
     localStorage.setItem('aio_key', key);
