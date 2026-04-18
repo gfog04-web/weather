@@ -242,6 +242,8 @@
     return res.json();
   }
  
+  let lastDataTime = null;
+ 
   async function updateDashboard() {
     const key = localStorage.getItem('aio_key');
     if (!key) return;
@@ -253,6 +255,7 @@
         if (!data || !data.length) continue;
         const sorted = data.slice().reverse();
         const latest = parseFloat(sorted[sorted.length-1].value);
+        if (i === 0) lastDataTime = new Date(sorted[sorted.length-1].created_at);
         document.getElementById(valIds[i]).textContent = latest.toFixed(1);
         document.getElementById(ccIds[i]).textContent  = latest.toFixed(1);
         drawGauge(gaugeIds[i], latest, mins[i], maxs[i], colors[i]);
@@ -264,7 +267,9 @@
     }
     const dot = document.getElementById('live-dot');
     const badge = document.getElementById('status-badge');
-    if (anySuccess) {
+    const ageMinutes = lastDataTime ? (Date.now() - lastDataTime.getTime()) / 60000 : 999;
+    const isOnline = anySuccess && ageMinutes < 3;
+    if (isOnline) {
       dot.classList.remove('offline');
       badge.className = 'status-badge online';
       badge.textContent = 'ONLINE';
@@ -273,8 +278,13 @@
       dot.classList.add('offline');
       badge.className = 'status-badge offline';
       badge.textContent = 'OFFLINE';
+      if (lastDataTime) {
+        const mins = Math.floor(ageMinutes);
+        document.getElementById('last-update').textContent = 'Last seen: ' + Math.min(mins, 99) + ' min ago';
+      }
     }
     document.getElementById('error-msg').style.display = anyError && !anySuccess ? 'block' : 'none';
+  }
   }
  
   async function saveKey() {
