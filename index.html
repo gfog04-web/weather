@@ -8,136 +8,103 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #050d1a; --bg2: #0a1628; --bg3: #0f1f38;
-      --accent: #378add; --accent2: #1d9e75; --accent3: #ef9f27; --accent4: #d4537e;
+      --bg: #050d1a; --bg2: #0a1628;
+      --accent: #378add; --accent2: #1d9e75; --accent3: #ef9f27; --accent4: #d4537e; --accent5: #7f77dd;
       --text: #e8f4fd; --muted: #7ab3d4; --border: rgba(55,138,221,0.2);
     }
     body { background: var(--bg); color: var(--text); font-family: 'Rajdhani', sans-serif; min-height: 100vh; }
-    .stars {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0;
+    .stars { position: fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0;
       background: radial-gradient(ellipse at 20% 50%, rgba(55,138,221,0.06) 0%, transparent 60%),
-                  radial-gradient(ellipse at 80% 20%, rgba(29,158,117,0.04) 0%, transparent 50%);
-    }
-    .container { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 32px 20px; }
+                  radial-gradient(ellipse at 80% 20%, rgba(29,158,117,0.04) 0%, transparent 50%); }
+    .container { position:relative; z-index:1; max-width:1100px; margin:0 auto; padding:32px 20px; }
  
-    /* KEY SETUP SCREEN */
-    #setup-screen {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: #050d1a; z-index: 100;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .setup-box {
-      background: #0a1628; border: 1px solid rgba(55,138,221,0.3);
-      border-radius: 16px; padding: 40px; max-width: 480px; width: 90%; text-align: center;
-    }
-    .setup-box h2 { font-size: 24px; font-weight: 600; color: var(--text); margin-bottom: 8px; letter-spacing: 2px; text-transform: uppercase; }
-    .setup-box p { font-size: 14px; color: var(--muted); margin-bottom: 24px; line-height: 1.6; font-family: 'Share Tech Mono', monospace; }
-    .setup-box input {
-      width: 100%; padding: 12px 16px; background: #050d1a;
-      border: 1px solid rgba(55,138,221,0.4); border-radius: 8px;
-      color: var(--text); font-family: 'Share Tech Mono', monospace; font-size: 13px;
-      margin-bottom: 16px; outline: none;
-    }
-    .setup-box input:focus { border-color: var(--accent); }
-    .setup-box button {
-      width: 100%; padding: 12px; background: var(--accent);
-      border: none; border-radius: 8px; color: #fff;
-      font-family: 'Rajdhani', sans-serif; font-size: 16px; font-weight: 600;
-      letter-spacing: 2px; text-transform: uppercase; cursor: pointer;
-      transition: opacity 0.2s;
-    }
-    .setup-box button:hover { opacity: 0.85; }
-    .setup-note { font-size: 11px; color: var(--muted); margin-top: 14px; font-family: 'Share Tech Mono', monospace; opacity: 0.7; }
-    .setup-error { color: #f09595; font-size: 12px; font-family: 'Share Tech Mono', monospace; margin-bottom: 12px; display: none; }
+    #setup-screen { position:fixed; top:0; left:0; width:100%; height:100%; background:#050d1a; z-index:100; display:flex; align-items:center; justify-content:center; }
+    .setup-box { background:#0a1628; border:1px solid rgba(55,138,221,0.3); border-radius:16px; padding:40px; max-width:480px; width:90%; text-align:center; }
+    .setup-box h2 { font-size:24px; font-weight:600; color:var(--text); margin-bottom:8px; letter-spacing:2px; text-transform:uppercase; }
+    .setup-box p { font-size:14px; color:var(--muted); margin-bottom:24px; line-height:1.6; font-family:'Share Tech Mono',monospace; }
+    .setup-box input { width:100%; padding:12px 16px; background:#050d1a; border:1px solid rgba(55,138,221,0.4); border-radius:8px; color:var(--text); font-family:'Share Tech Mono',monospace; font-size:13px; margin-bottom:16px; outline:none; }
+    .setup-box input:focus { border-color:var(--accent); }
+    .setup-box button { width:100%; padding:12px; background:var(--accent); border:none; border-radius:8px; color:#fff; font-family:'Rajdhani',sans-serif; font-size:16px; font-weight:600; letter-spacing:2px; text-transform:uppercase; cursor:pointer; transition:opacity 0.2s; }
+    .setup-box button:hover { opacity:0.85; }
+    .setup-note { font-size:11px; color:var(--muted); margin-top:14px; font-family:'Share Tech Mono',monospace; opacity:0.7; }
+    .setup-error { color:#f09595; font-size:12px; font-family:'Share Tech Mono',monospace; margin-bottom:12px; display:none; }
  
-    /* MAIN DASHBOARD */
-    #dashboard { display: none; }
-    header { text-align: center; margin-bottom: 36px; }
-    .station-label { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 4px; text-transform: uppercase; margin-bottom: 8px; opacity: 0.8; }
-    header h1 { font-size: 42px; font-weight: 600; letter-spacing: 3px; color: var(--text); text-transform: uppercase; line-height: 1; }
-    header h1 span { color: var(--accent); }
-    .live-row { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 10px; }
-    .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent2); animation: pulse 2s infinite; transition: background 0.5s; }
-    .live-dot.offline { background: #a32d2d; animation: none; opacity: 0.7; }
-    @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.8); } }
-    .live-text { font-family: 'Share Tech Mono', monospace; font-size: 12px; color: var(--muted); letter-spacing: 1px; }
-    .status-badge {
-      font-family: 'Share Tech Mono', monospace; font-size: 10px; letter-spacing: 1px;
-      padding: 3px 10px; border-radius: 20px; font-weight: 600;
-    }
-    .status-badge.online { background: rgba(29,158,117,0.15); color: #1d9e75; border: 1px solid rgba(29,158,117,0.4); }
-    .status-badge.offline { background: rgba(163,45,45,0.15); color: #f09595; border: 1px solid rgba(163,45,45,0.4); }
-    .reset-btn {
-      font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--muted);
-      background: none; border: 1px solid rgba(55,138,221,0.2); border-radius: 4px;
-      padding: 3px 8px; cursor: pointer; letter-spacing: 1px; margin-left: 8px;
-      transition: border-color 0.2s;
-    }
-    .reset-btn:hover { border-color: var(--accent); color: var(--accent); }
+    #dashboard { display:none; }
+    header { text-align:center; margin-bottom:36px; }
+    .station-label { font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--accent); letter-spacing:4px; text-transform:uppercase; margin-bottom:8px; opacity:0.8; }
+    header h1 { font-size:42px; font-weight:600; letter-spacing:3px; color:var(--text); text-transform:uppercase; line-height:1; }
+    header h1 span { color:var(--accent); }
+    .live-row { display:flex; align-items:center; justify-content:center; gap:16px; margin-top:10px; flex-wrap:wrap; }
+    .live-dot { width:8px; height:8px; border-radius:50%; background:var(--accent2); animation:pulse 2s infinite; transition:background 0.5s; }
+    .live-dot.offline { background:#a32d2d; animation:none; opacity:0.7; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.8)} }
+    .live-text { font-family:'Share Tech Mono',monospace; font-size:12px; color:var(--muted); letter-spacing:1px; }
+    .status-badge { font-family:'Share Tech Mono',monospace; font-size:10px; letter-spacing:1px; padding:3px 10px; border-radius:20px; font-weight:600; }
+    .status-badge.online { background:rgba(29,158,117,0.15); color:#1d9e75; border:1px solid rgba(29,158,117,0.4); }
+    .status-badge.offline { background:rgba(163,45,45,0.15); color:#f09595; border:1px solid rgba(163,45,45,0.4); }
+    .reset-btn { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--muted); background:none; border:1px solid rgba(55,138,221,0.2); border-radius:4px; padding:3px 8px; cursor:pointer; letter-spacing:1px; transition:border-color 0.2s; }
+    .reset-btn:hover { border-color:var(--accent); color:var(--accent); }
  
-    .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
-    .metric-card {
-      background: var(--bg2); border: 1px solid var(--border); border-radius: 12px;
-      padding: 20px 16px; text-align: center; position: relative; overflow: hidden; transition: border-color 0.3s;
-    }
-    .metric-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
-    .metric-card.t::before { background: var(--accent); }
-    .metric-card.h::before { background: var(--accent2); }
-    .metric-card.p::before { background: var(--accent3); }
-    .metric-card.d::before { background: var(--accent4); }
-    .metric-card:hover { border-color: rgba(55,138,221,0.5); }
-    .metric-label { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
-    .metric-value { font-size: 38px; font-weight: 600; line-height: 1; color: var(--text); }
-    .metric-card.t .metric-value { color: var(--accent); }
-    .metric-card.h .metric-value { color: var(--accent2); }
-    .metric-card.p .metric-value { color: var(--accent3); }
-    .metric-card.d .metric-value { color: var(--accent4); }
-    .metric-unit { font-size: 13px; color: var(--muted); margin-top: 4px; font-family: 'Share Tech Mono', monospace; }
+    .summary-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:12px; margin-bottom:28px; }
+    .metric-card { background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:16px 12px; text-align:center; position:relative; overflow:hidden; }
+    .metric-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
+    .metric-card.t::before{background:var(--accent)} .metric-card.h::before{background:var(--accent2)}
+    .metric-card.p::before{background:var(--accent3)} .metric-card.d::before{background:var(--accent4)}
+    .metric-card.r::before{background:var(--accent5)} .metric-card.tc::before{background:#5dcaa5}
+    .metric-label { font-family:'Share Tech Mono',monospace; font-size:9px; color:var(--muted); letter-spacing:2px; text-transform:uppercase; margin-bottom:8px; }
+    .metric-value { font-size:26px; font-weight:600; line-height:1; }
+    .metric-card.t .metric-value{color:var(--accent)} .metric-card.h .metric-value{color:var(--accent2)}
+    .metric-card.p .metric-value{color:var(--accent3)} .metric-card.d .metric-value{color:var(--accent4)}
+    .metric-card.r .metric-value{color:var(--accent5)} .metric-card.tc .metric-value{color:#5dcaa5}
+    .metric-unit { font-size:11px; color:var(--muted); margin-top:4px; font-family:'Share Tech Mono',monospace; }
  
-    .gauges-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
-    .gauge-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 16px 12px 12px; text-align: center; }
-    .gauge-title { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
-    .gauge-canvas { width: 100% !important; height: auto !important; }
+    .gauges-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:28px; }
+    .gauge-card { background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:16px 12px 12px; text-align:center; }
+    .gauge-title { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--muted); letter-spacing:2px; text-transform:uppercase; margin-bottom:8px; }
+    .gauge-canvas { width:100% !important; height:auto !important; }
  
-    .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
-    .chart-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
-    .chart-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-    .chart-title { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; }
-    .chart-current { font-size: 14px; font-weight: 600; color: var(--text); }
-    .chart-wrap { position: relative; height: 160px; }
+    .charts-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:28px; }
+    .chart-card { background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:20px; }
+    .chart-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; flex-wrap:wrap; gap:8px; }
+    .chart-title { font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--muted); letter-spacing:2px; text-transform:uppercase; }
+    .chart-current { font-size:14px; font-weight:600; }
+    .chart-wrap { position:relative; height:180px; }
+    .dl-row { display:flex; gap:6px; margin-top:10px; }
+    .dl-btn { font-family:'Share Tech Mono',monospace; font-size:9px; color:var(--muted); background:none; border:1px solid rgba(55,138,221,0.2); border-radius:4px; padding:3px 8px; cursor:pointer; letter-spacing:1px; transition:all 0.2s; }
+    .dl-btn:hover { border-color:var(--accent); color:var(--accent); }
  
-    .error-msg {
-      background: rgba(162,45,45,0.15); border: 1px solid rgba(162,45,45,0.4);
-      border-radius: 8px; padding: 12px 16px;
-      font-family: 'Share Tech Mono', monospace; font-size: 12px; color: #f09595;
-      text-align: center; margin-bottom: 16px; display: none;
-    }
-    footer { text-align: center; font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--muted); opacity: 0.6; letter-spacing: 1px; }
+    .section-title { font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--muted); letter-spacing:3px; text-transform:uppercase; margin-bottom:16px; padding-bottom:8px; border-bottom:1px solid var(--border); }
+    .rainfall-grid { display:grid; grid-template-columns:2fr 1fr; gap:16px; margin-bottom:28px; }
+    .today-rain-card { background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:20px; text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+    .today-rain-label { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--muted); letter-spacing:2px; text-transform:uppercase; margin-bottom:12px; }
+    .today-rain-value { font-size:64px; font-weight:600; color:var(--accent5); line-height:1; }
+    .today-rain-unit { font-size:16px; color:var(--muted); font-family:'Share Tech Mono',monospace; margin-top:6px; }
+    .today-tip-count { font-size:13px; color:var(--muted); font-family:'Share Tech Mono',monospace; margin-top:8px; }
  
-    @media (max-width: 700px) {
-      .summary-grid, .gauges-grid { grid-template-columns: repeat(2, 1fr); }
-      .charts-grid { grid-template-columns: 1fr; }
-      header h1 { font-size: 28px; }
-      .metric-value { font-size: 28px; }
+    .error-msg { background:rgba(162,45,45,0.15); border:1px solid rgba(162,45,45,0.4); border-radius:8px; padding:12px 16px; font-family:'Share Tech Mono',monospace; font-size:12px; color:#f09595; text-align:center; margin-bottom:16px; display:none; }
+    footer { text-align:center; font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--muted); opacity:0.6; letter-spacing:1px; margin-top:8px; }
+ 
+    @media(max-width:800px) {
+      .summary-grid{grid-template-columns:repeat(3,1fr)} .gauges-grid{grid-template-columns:repeat(2,1fr)}
+      .charts-grid{grid-template-columns:1fr} .rainfall-grid{grid-template-columns:1fr}
+      header h1{font-size:28px} .metric-value{font-size:20px}
     }
   </style>
 </head>
 <body>
 <div class="stars"></div>
  
-<!-- KEY SETUP SCREEN -->
 <div id="setup-screen">
   <div class="setup-box">
     <h2>ASOS Weather</h2>
-    <p>Enter your Adafruit IO key to connect to the weather station. This is stored only on your device.</p>
-    <div class="setup-error" id="setup-error">Invalid key or connection failed. Check your key and try again.</div>
+    <p>Enter your Adafruit IO key to connect to the weather station. Stored on your device only.</p>
+    <div class="setup-error" id="setup-error"></div>
     <input type="text" id="key-input" placeholder="aio_xxxxxxxxxxxxxxxxxx" autocomplete="off" />
     <button onclick="saveKey()">Connect</button>
     <div class="setup-note">Your key is saved in your browser only — never uploaded anywhere.</div>
   </div>
 </div>
  
-<!-- MAIN DASHBOARD -->
 <div id="dashboard">
   <div class="container">
     <header>
@@ -151,13 +118,15 @@
       </div>
     </header>
  
-    <div class="error-msg" id="error-msg">Unable to fetch data. Check your Adafruit IO key or internet connection.</div>
+    <div class="error-msg" id="error-msg">Unable to fetch data. Check your connection.</div>
  
     <div class="summary-grid">
       <div class="metric-card t"><div class="metric-label">Temperature</div><div class="metric-value" id="val-temp">--</div><div class="metric-unit">°F</div></div>
       <div class="metric-card h"><div class="metric-label">Humidity</div><div class="metric-value" id="val-humid">--</div><div class="metric-unit">%RH</div></div>
       <div class="metric-card p"><div class="metric-label">Pressure</div><div class="metric-value" id="val-press">--</div><div class="metric-unit">hPa</div></div>
       <div class="metric-card d"><div class="metric-label">Dew Point</div><div class="metric-value" id="val-dew">--</div><div class="metric-unit">°F</div></div>
+      <div class="metric-card r"><div class="metric-label">Rainfall</div><div class="metric-value" id="val-rain">--</div><div class="metric-unit">inches</div></div>
+      <div class="metric-card tc"><div class="metric-label">Tip Count</div><div class="metric-value" id="val-tips">--</div><div class="metric-unit">tips</div></div>
     </div>
  
     <div class="gauges-grid">
@@ -171,18 +140,37 @@
       <div class="chart-card">
         <div class="chart-header"><div class="chart-title">Temperature °F</div><div class="chart-current" id="cc1" style="color:#378add;">--</div></div>
         <div class="chart-wrap"><canvas id="c1" role="img" aria-label="Temperature history">Temperature over time.</canvas></div>
+        <div class="dl-row"><button class="dl-btn" onclick="downloadPNG('c1','temperature')">PNG</button><button class="dl-btn" onclick="downloadCSV(0,'temperature')">CSV</button></div>
       </div>
       <div class="chart-card">
         <div class="chart-header"><div class="chart-title">Humidity %</div><div class="chart-current" id="cc2" style="color:#1d9e75;">--</div></div>
         <div class="chart-wrap"><canvas id="c2" role="img" aria-label="Humidity history">Humidity over time.</canvas></div>
+        <div class="dl-row"><button class="dl-btn" onclick="downloadPNG('c2','humidity')">PNG</button><button class="dl-btn" onclick="downloadCSV(1,'humidity')">CSV</button></div>
       </div>
       <div class="chart-card">
         <div class="chart-header"><div class="chart-title">Pressure hPa</div><div class="chart-current" id="cc3" style="color:#ef9f27;">--</div></div>
         <div class="chart-wrap"><canvas id="c3" role="img" aria-label="Pressure history">Pressure over time.</canvas></div>
+        <div class="dl-row"><button class="dl-btn" onclick="downloadPNG('c3','pressure')">PNG</button><button class="dl-btn" onclick="downloadCSV(2,'pressure')">CSV</button></div>
       </div>
       <div class="chart-card">
         <div class="chart-header"><div class="chart-title">Dew Point °F</div><div class="chart-current" id="cc4" style="color:#d4537e;">--</div></div>
         <div class="chart-wrap"><canvas id="c4" role="img" aria-label="Dew point history">Dew point over time.</canvas></div>
+        <div class="dl-row"><button class="dl-btn" onclick="downloadPNG('c4','dewpoint')">PNG</button><button class="dl-btn" onclick="downloadCSV(3,'dewpoint')">CSV</button></div>
+      </div>
+    </div>
+ 
+    <div class="section-title">Rainfall Data</div>
+    <div class="rainfall-grid">
+      <div class="chart-card">
+        <div class="chart-header"><div class="chart-title">Daily Rainfall — Last 30 Days (inches)</div></div>
+        <div class="chart-wrap" style="height:220px;"><canvas id="rain-chart" role="img" aria-label="Daily rainfall bar chart">Daily rainfall totals.</canvas></div>
+        <div class="dl-row"><button class="dl-btn" onclick="downloadPNG('rain-chart','daily-rainfall')">PNG</button><button class="dl-btn" onclick="downloadRainCSV()">CSV</button></div>
+      </div>
+      <div class="today-rain-card">
+        <div class="today-rain-label">Today's Rainfall</div>
+        <div class="today-rain-value" id="today-rain-big">--</div>
+        <div class="today-rain-unit">inches</div>
+        <div class="today-tip-count" id="today-tips-label">-- tips recorded</div>
       </div>
     </div>
  
@@ -193,130 +181,180 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
   const AIO_USER = 'foges';
-  const feeds  = ['temperature','humidity','pressure','dewpoint'];
-  const colors = ['#378add','#1d9e75','#ef9f27','#d4537e'];
-  const valIds = ['val-temp','val-humid','val-press','val-dew'];
-  const ccIds  = ['cc1','cc2','cc3','cc4'];
+  const wFeeds   = ['temperature','humidity','pressure','dewpoint'];
+  const colors   = ['#378add','#1d9e75','#ef9f27','#d4537e'];
+  const valIds   = ['val-temp','val-humid','val-press','val-dew'];
+  const ccIds    = ['cc1','cc2','cc3','cc4'];
   const gaugeIds = ['g1','g2','g3','g4'];
-  const mins = [0,0,980,0];
-  const maxs = [120,100,1050,100];
-  let updateInterval = null;
+  const mins     = [0,0,980,0];
+  const maxs     = [120,100,1050,100];
+  let updateInterval=null, lastDataTime=null;
+  let chartDataStore=[[],[],[],[]], chartLabelStore=[], rainDataStore=[];
+  let rainChart=null;
  
-  function drawGauge(id, value, min, max, color) {
-    const canvas = document.getElementById(id);
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    const w = canvas.width, h = canvas.height;
+  function drawGauge(id,value,min,max,color){
+    const canvas=document.getElementById(id); if(!canvas)return;
+    const ctx=canvas.getContext('2d'),w=canvas.width,h=canvas.height;
     ctx.clearRect(0,0,w,h);
-    const cx = w/2, cy = h*0.88, r = Math.min(w,h)*0.72;
-    const pct = Math.max(0, Math.min(1, (value-min)/(max-min)));
-    ctx.beginPath(); ctx.arc(cx,cy,r,Math.PI,2*Math.PI);
-    ctx.strokeStyle='rgba(255,255,255,0.07)'; ctx.lineWidth=12; ctx.lineCap='round'; ctx.stroke();
-    ctx.beginPath(); ctx.arc(cx,cy,r,Math.PI,Math.PI+pct*Math.PI);
-    ctx.strokeStyle=color; ctx.lineWidth=12; ctx.lineCap='round'; ctx.stroke();
-    ctx.fillStyle='#e8f4fd'; ctx.font='600 20px Rajdhani,sans-serif';
-    ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText(typeof value==='number' ? value.toFixed(1):'--', cx, cy-10);
+    const cx=w/2,cy=h*0.88,r=Math.min(w,h)*0.72,pct=Math.max(0,Math.min(1,(value-min)/(max-min)));
+    ctx.beginPath();ctx.arc(cx,cy,r,Math.PI,2*Math.PI);ctx.strokeStyle='rgba(255,255,255,0.07)';ctx.lineWidth=12;ctx.lineCap='round';ctx.stroke();
+    ctx.beginPath();ctx.arc(cx,cy,r,Math.PI,Math.PI+pct*Math.PI);ctx.strokeStyle=color;ctx.lineWidth=12;ctx.lineCap='round';ctx.stroke();
+    ctx.fillStyle='#e8f4fd';ctx.font='600 20px Rajdhani,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(typeof value==='number'?value.toFixed(1):'--',cx,cy-10);
   }
  
-  function makeChart(id, color) {
-    return new Chart(document.getElementById(id), {
+  function makeLineChart(id,color){
+    return new Chart(document.getElementById(id),{
       type:'line',
-      data:{ labels:[], datasets:[{ data:[], borderColor:color, backgroundColor:color+'18', fill:true, tension:0.45, pointRadius:2, pointBackgroundColor:color, borderWidth:2 }] },
-      options:{
-        responsive:true, maintainAspectRatio:false,
-        plugins:{ legend:{ display:false } },
+      data:{labels:[],datasets:[{data:[],borderColor:color,backgroundColor:color+'18',fill:true,tension:0.45,pointRadius:4,pointBackgroundColor:color,pointBorderColor:color,borderWidth:2}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
         scales:{
-          x:{ ticks:{ color:'#7ab3d4', font:{ size:9, family:'Share Tech Mono' }, maxTicksLimit:6 }, grid:{ color:'rgba(255,255,255,0.04)' }, border:{ color:'rgba(255,255,255,0.08)' } },
-          y:{ ticks:{ color:'#7ab3d4', font:{ size:9, family:'Share Tech Mono' } }, grid:{ color:'rgba(255,255,255,0.04)' }, border:{ color:'rgba(255,255,255,0.08)' } }
-        }
-      }
+          x:{ticks:{color:'#7ab3d4',font:{size:9,family:'Share Tech Mono'},maxTicksLimit:8},grid:{color:'rgba(255,255,255,0.04)'},border:{color:'rgba(255,255,255,0.08)'}},
+          y:{ticks:{color:'#7ab3d4',font:{size:9,family:'Share Tech Mono'}},grid:{color:'rgba(255,255,255,0.04)'},border:{color:'rgba(255,255,255,0.08)'}}
+        }}
     });
   }
  
-  const charts = ['c1','c2','c3','c4'].map((id,i) => makeChart(id, colors[i]));
+  function makeRainChart(){
+    rainChart=new Chart(document.getElementById('rain-chart'),{
+      type:'bar',
+      data:{labels:[],datasets:[{data:[],backgroundColor:'rgba(127,119,221,0.5)',borderColor:'#7f77dd',borderWidth:2,borderRadius:4}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+        scales:{
+          x:{ticks:{color:'#7ab3d4',font:{size:9,family:'Share Tech Mono'},maxTicksLimit:15},grid:{color:'rgba(255,255,255,0.04)'},border:{color:'rgba(255,255,255,0.08)'}},
+          y:{beginAtZero:true,ticks:{color:'#7ab3d4',font:{size:9,family:'Share Tech Mono'}},grid:{color:'rgba(255,255,255,0.04)'},border:{color:'rgba(255,255,255,0.08)'}}
+        }}
+    });
+  }
  
-  async function fetchFeed(feed, key) {
-    const res = await fetch(`https://io.adafruit.com/api/v2/${AIO_USER}/feeds/${feed}/data?limit=30`, { headers:{ 'X-AIO-Key': key } });
-    if (!res.ok) throw new Error('fetch failed');
+  const charts=['c1','c2','c3','c4'].map((id,i)=>makeLineChart(id,colors[i]));
+  makeRainChart();
+ 
+  async function fetchFeed(feed,key,limit=48){
+    const res=await fetch(`https://io.adafruit.com/api/v2/${AIO_USER}/feeds/${feed}/data?limit=${limit}`,{headers:{'X-AIO-Key':key}});
+    if(!res.ok)throw new Error('failed');
     return res.json();
   }
  
-  let lastDataTime = null;
+  async function fetchDailyRainfall(key){
+    const data=await fetchFeed('rainfall',key,1000);
+    if(!data||!data.length)return;
+    const dailyMap={};
+    data.forEach(d=>{
+      const date=new Date(d.created_at);
+      const dk=date.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+      const val=parseFloat(d.value);
+      if(!dailyMap[dk]||val>dailyMap[dk])dailyMap[dk]=val;
+    });
+    const keys=Object.keys(dailyMap).slice(-30);
+    rainDataStore=keys.map(k=>({label:k,value:dailyMap[k]}));
+    rainChart.data.labels=keys;
+    rainChart.data.datasets[0].data=keys.map(k=>dailyMap[k]);
+    rainChart.update('none');
+  }
  
-  async function updateDashboard() {
-    const key = localStorage.getItem('aio_key');
-    if (!key) return;
-    let anyError = false;
-    let anySuccess = false;
-    for (let i=0; i<feeds.length; i++) {
-      try {
-        const data = await fetchFeed(feeds[i], key);
-        if (!data || !data.length) continue;
-        const sorted = data.slice().reverse();
-        const latest = parseFloat(sorted[sorted.length-1].value);
-        if (i === 0) lastDataTime = new Date(sorted[sorted.length-1].created_at);
-        document.getElementById(valIds[i]).textContent = latest.toFixed(1);
-        document.getElementById(ccIds[i]).textContent  = latest.toFixed(1);
-        drawGauge(gaugeIds[i], latest, mins[i], maxs[i], colors[i]);
-        charts[i].data.labels = sorted.map(d => { const t=new Date(d.created_at); return t.getHours().toString().padStart(2,'0')+':'+t.getMinutes().toString().padStart(2,'0'); });
-        charts[i].data.datasets[0].data = sorted.map(d => parseFloat(d.value));
-        charts[i].update('none');
-        anySuccess = true;
-      } catch(e) { anyError=true; }
+  async function updateDashboard(){
+    const key=localStorage.getItem('aio_key'); if(!key)return;
+    let anyError=false,anySuccess=false;
+ 
+    for(let i=0;i<wFeeds.length;i++){
+      try{
+        const data=await fetchFeed(wFeeds[i],key,48);
+        if(!data||!data.length)continue;
+        const sorted=data.slice().reverse();
+        const latest=parseFloat(sorted[sorted.length-1].value);
+        if(i===0)lastDataTime=new Date(sorted[sorted.length-1].created_at);
+        document.getElementById(valIds[i]).textContent=latest.toFixed(1);
+        document.getElementById(ccIds[i]).textContent=latest.toFixed(1);
+        drawGauge(gaugeIds[i],latest,mins[i],maxs[i],colors[i]);
+        const lbls=sorted.map(d=>{const t=new Date(d.created_at);return t.getHours().toString().padStart(2,'0')+':'+t.getMinutes().toString().padStart(2,'0');});
+        const vals=sorted.map(d=>parseFloat(d.value));
+        chartDataStore[i]=vals; if(i===0)chartLabelStore=lbls;
+        charts[i].data.labels=lbls; charts[i].data.datasets[0].data=vals; charts[i].update('none');
+        anySuccess=true;
+      }catch(e){anyError=true;}
     }
-    const dot = document.getElementById('live-dot');
-    const badge = document.getElementById('status-badge');
-    const ageMinutes = lastDataTime ? (Date.now() - lastDataTime.getTime()) / 60000 : 999;
-    const isOnline = anySuccess && ageMinutes < 3;
-    if (isOnline) {
-      dot.classList.remove('offline');
-      badge.className = 'status-badge online';
-      badge.textContent = 'ONLINE';
-      document.getElementById('last-update').textContent = 'Last updated: ' + new Date().toLocaleTimeString();
-    } else {
-      dot.classList.add('offline');
-      badge.className = 'status-badge offline';
-      badge.textContent = 'OFFLINE';
-      if (lastDataTime) {
-        const mins = Math.floor(ageMinutes);
-        document.getElementById('last-update').textContent = 'Last seen: ' + Math.min(mins, 99) + ' min ago';
+ 
+    try{
+      const rd=await fetchFeed('rainfall',key,48);
+      if(rd&&rd.length){
+        const v=parseFloat(rd[0].value);
+        document.getElementById('val-rain').textContent=v.toFixed(3);
+        document.getElementById('today-rain-big').textContent=v.toFixed(3);
       }
+    }catch(e){}
+ 
+    try{
+      const td=await fetchFeed('tipcount',key,48);
+      if(td&&td.length){
+        const v=parseInt(td[0].value);
+        document.getElementById('val-tips').textContent=v;
+        document.getElementById('today-tips-label').textContent=v+' tips recorded today';
+      }
+    }catch(e){}
+ 
+    try{await fetchDailyRainfall(key);}catch(e){}
+ 
+    const dot=document.getElementById('live-dot'),badge=document.getElementById('status-badge');
+    const ageMin=lastDataTime?(Date.now()-lastDataTime.getTime())/60000:999;
+    const online=anySuccess&&ageMin<3;
+    if(online){
+      dot.classList.remove('offline');badge.className='status-badge online';badge.textContent='ONLINE';
+      document.getElementById('last-update').textContent='Last updated: '+new Date().toLocaleTimeString();
+    }else{
+      dot.classList.add('offline');badge.className='status-badge offline';badge.textContent='OFFLINE';
+      if(lastDataTime)document.getElementById('last-update').textContent='Last seen: '+Math.min(Math.floor(ageMin),999)+' min ago';
     }
-    document.getElementById('error-msg').style.display = anyError && !anySuccess ? 'block' : 'none';
-  }
+    document.getElementById('error-msg').style.display=(anyError&&!anySuccess)?'block':'none';
   }
  
-  function saveKey() {
-    const key = document.getElementById('key-input').value.trim();
-    if (!key || !key.startsWith('aio_')) {
-      document.getElementById('setup-error').style.display = 'block';
-      document.getElementById('setup-error').textContent = 'Key should start with "aio_". Check and try again.';
-      return;
-    }
-    localStorage.setItem('aio_key', key);
-    showDashboard();
+  function downloadPNG(canvasId,name){
+    const canvas=document.getElementById(canvasId);
+    const ts=new Date().toISOString().slice(0,19).replace('T','_').replace(/:/g,'-');
+    const a=document.createElement('a'); a.download=name+'_'+ts+'.png'; a.href=canvas.toDataURL('image/png'); a.click();
   }
  
-  function showDashboard() {
-    document.getElementById('setup-screen').style.display = 'none';
-    document.getElementById('dashboard').style.display = 'block';
+  function downloadCSV(index,name){
+    const lbls=chartLabelStore,vals=chartDataStore[index];
+    if(!lbls.length)return;
+    const ts=new Date().toISOString().slice(0,19).replace('T','_').replace(/:/g,'-');
+    let csv='ASOS Weather Station — '+name+'\nStart: '+lbls[0]+' | End: '+lbls[lbls.length-1]+'\nTime,'+name+'\n';
+    lbls.forEach((l,i)=>{csv+=l+','+(vals[i]!==undefined?vals[i].toFixed(2):'')+'\n';});
+    const a=document.createElement('a'); a.download=name+'_'+ts+'.csv'; a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.click();
+  }
+ 
+  function downloadRainCSV(){
+    if(!rainDataStore.length)return;
+    const ts=new Date().toISOString().slice(0,19).replace('T','_').replace(/:/g,'-');
+    let csv='ASOS Weather Station — Daily Rainfall\nStart: '+rainDataStore[0].label+' | End: '+rainDataStore[rainDataStore.length-1].label+'\nDate,Rainfall (inches)\n';
+    rainDataStore.forEach(d=>{csv+=d.label+','+d.value.toFixed(3)+'\n';});
+    const a=document.createElement('a'); a.download='daily-rainfall_'+ts+'.csv'; a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.click();
+  }
+ 
+  function saveKey(){
+    const key=document.getElementById('key-input').value.trim();
+    if(!key||!key.startsWith('aio_')){
+      const e=document.getElementById('setup-error'); e.style.display='block'; e.textContent='Key should start with "aio_". Check and try again.'; return;
+    }
+    localStorage.setItem('aio_key',key); showDashboard();
+  }
+ 
+  function showDashboard(){
+    document.getElementById('setup-screen').style.display='none';
+    document.getElementById('dashboard').style.display='block';
     updateDashboard();
-    if (updateInterval) clearInterval(updateInterval);
-    updateInterval = setInterval(updateDashboard, 30000);
+    if(updateInterval)clearInterval(updateInterval);
+    updateInterval=setInterval(updateDashboard,30000);
   }
  
-  function resetKey() {
+  function resetKey(){
     localStorage.removeItem('aio_key');
-    document.getElementById('setup-screen').style.display = 'flex';
-    document.getElementById('dashboard').style.display = 'none';
-    if (updateInterval) clearInterval(updateInterval);
+    document.getElementById('setup-screen').style.display='flex';
+    document.getElementById('dashboard').style.display='none';
+    if(updateInterval)clearInterval(updateInterval);
   }
  
-  // On load, check if key already saved
-  if (localStorage.getItem('aio_key')) {
-    showDashboard();
-  }
+  if(localStorage.getItem('aio_key'))showDashboard();
 </script>
 </body>
 </html>
